@@ -1,5 +1,11 @@
 #lang nanopass
 
+;;César Eduardo Jardines Mendoza
+;;314071549
+
+;;Espero te guste mi práctica, la hice con mucho amor y tiempo
+;;No pude acabar el ejercicio 3 por lo que no lo anexo
+
 ;;Ejercicio 1
 (define (hamming l1 l2)
          (if (and (empty? l1)(empty? l2))
@@ -49,6 +55,8 @@
     ))
 
 ;;Ejecicio 2b
+;;Es d el día de la semana y m el mes con el que empezó 1901, en este caso empezó el año siendo martes(2) del mes enero(1)
+;; (domingo 1901 2000 2 1) 
 (define (domingo a1 a2 d m)
   (if (>= a2 a1)
       (if (= (modulo (+ d (foo m a1 )) 7) 0) 
@@ -78,10 +86,11 @@
       [(zero? (modulo n (car l))) #f]
       [else (prime? n (cdr l))]))
 
-;Ejercicio 4a
+;; Struct de ejercicio 4a
 (struct node (x left right) #:transparent)
 (struct leaf (x) #:transparent)
 
+;;Ejercicio 4a
 (define (div-tree n)
   (Ntree n))
 
@@ -103,8 +112,8 @@
   (let* ([lst (l-prime n)]
          [hoja (Dhojas lst n)]) (node n (leaf hoja) (derechaSig (quotient n hoja)))))
 
-;;Ejercicio 4b
-(define (prime-fac n)
+;;Función auxiliar para ejercicio 4b
+(define (factor n)
   (define (*factor divisor n)
     (if (> (* divisor divisor) n)
         (list n)
@@ -113,4 +122,15 @@
             (*factor (+ divisor 1) n))))
   (*factor 2 n))
 
+;;Función auxiliar para ejercicio 4b
+(define (multiplica l n a)
+  (if (null? l) ;; vacia
+      (list a)
+      (if (equal? n (list-ref l 0)) ;; iguales
+          (multiplica (list-tail l 1) n (* n a))
+          (append (list a) (multiplica (list-tail l 1) (list-ref l 0) (list-ref l 0))))))
+
+;;Ejercicio 4b
+(define (prime-fac n)
+  (multiplica (factor n) 2 1))
 
