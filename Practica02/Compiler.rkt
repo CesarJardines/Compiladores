@@ -69,10 +69,25 @@ Lexer y parser
     ;=>
     (token-BOOL (string->symbol lexeme) )]
 
-   ;<var>::= ><car><digit>
+  
+   ;<var>::= <car><digit>
    [(::(:or (char-range #\a #\z) (char-range #\A #\Z))(char-range #\0 #\9)) 
     ;=>
     (token-VAR (string->symbol lexeme))]
+   
+   ;<var>::= <car><var>
+   [(::  (:+ (char-range #\a #\z))  (::(:+(::(char-range #\a #\z) (::(char-range #\0 #\9))))) ) 
+    ;=>
+    (token-VAR (string->symbol lexeme))]
+
+   ;<var>::= <car><digit><var>
+   [(::  (:+ (::(char-range #\a #\z) (::(char-range #\0 #\9))))  (::(:+(::(char-range #\a #\z) (::(char-range #\0 #\9)))))) 
+    ;=>
+    (token-VAR (string->symbol lexeme))]
+
+
+  
+
 
    
 
