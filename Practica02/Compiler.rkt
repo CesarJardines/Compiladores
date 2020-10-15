@@ -15,7 +15,7 @@ Lexer y parser
          parser-tools/yacc)
 
 (define-tokens a (NUM VAR BOOLE)) ;Tokens que son contenedores --- data Tokens = NUM Int | VAR String | BOOL Bool
-(define-empty-tokens b (+ - * / = and or
+(define-empty-tokens b (+ - * / = and or :
                           APP EOF LET ASSIGN IN
                           LP RP LC RC
                           FUN)) ;Tokens que no almacenan datos
@@ -62,27 +62,6 @@ Lexer y parser
 
    [(:: #\a #\p #\p)
     (token-APP)]
-
-   
-   [(:+ (:or (char-range #\a #\z) (char-range #\A #\Z))) ; ([a..z]|[A..Z])^+
-    ; =>
-    (token-VAR (string->symbol lexeme))]
-  
-   ;<var>::= <car><digit>
-   [(::(:or (char-range #\a #\z) (char-range #\A #\Z))(char-range #\0 #\9)) 
-    ;=>
-    (token-VAR (string->symbol lexeme))]
-   
-   ;<var>::= <car><var>
-   [(::  (:+ (char-range #\a #\z))  (::(:+(::(char-range #\a #\z) (::(char-range #\0 #\9))))) ) 
-    ;=>
-    (token-VAR (string->symbol lexeme))]
-
-   ;<var>::= <car><digit><var>
-   [(::  (:+ (::(char-range #\a #\z) (::(char-range #\0 #\9))))  (::(:+(::(char-range #\a #\z) (::(char-range #\0 #\9)))))) 
-    ;=>
-    (token-VAR (string->symbol lexeme))]
-
 
    [(:: #\# #\f)
     ;=>
@@ -134,6 +113,33 @@ Lexer y parser
    [#\]
     ;=>
     (token-RC)]
+
+   [(:: #\o #\r)
+    ;=>
+    (token-or)]
+
+   [(:: #\a #\n #\d)
+    ;=>
+    (token-and)]
+
+   [(:+ (:or (char-range #\a #\z) (char-range #\A #\Z))) ; ([a..z]|[A..Z])^+
+    ; =>
+    (token-VAR (string->symbol lexeme))]
+  
+   ;<var>::= <car><digit>
+   [(::(:or (char-range #\a #\z) (char-range #\A #\Z))(char-range #\0 #\9)) 
+    ;=>
+    (token-VAR (string->symbol lexeme))]
+   
+   ;<var>::= <car><var>
+   [(::  (:+ (char-range #\a #\z))  (::(:+(::(char-range #\a #\z) (::(char-range #\0 #\9))))) ) 
+    ;=>
+    (token-VAR (string->symbol lexeme))]
+
+   ;<var>::= <car><digit><var>
+   [(::  (:+ (::(char-range #\a #\z) (::(char-range #\0 #\9))))  (::(:+(::(char-range #\a #\z) (::(char-range #\0 #\9)))))) 
+    ;=>
+    (token-VAR (string->symbol lexeme))]
    
    [whitespace ;Caso expecial
     ; =>
