@@ -18,7 +18,8 @@ Lexer y parser
 (define-empty-tokens b (+ - * / = and or :
                           APP EOF LET ASSIGN IN
                           LP RP LC RC
-                          FUN)) ;Tokens que no almacenan datos
+                          FUN IF THEN ELSE
+                          ACA ATA)) ;Tokens que no almacenan datos
 
 ; "fun (x:T) : T => x"
 ; [FUN,LP,VAR "x",TYPEOF,TYPE "T",RP,TYPEOF,TYPE "T",ACA,VAR "x",ATA,EOF]
@@ -121,6 +122,22 @@ Lexer y parser
    [(:: #\a #\n #\d)
     ;=>
     (token-and)]
+
+     [(:: #\i #\f)
+    ;=>
+    (token-IF)]
+
+    [(:: #\t #\h #\e #\n)
+    ;=>
+    (token-THEN)]
+
+   [(:: #\e #\l #\s #\e)
+    ;=>
+    (token-ELSE)]
+
+   [(:: #\= #\>)
+    ;=>
+    (token-ACA)]
 
    [(:+ (:or (char-range #\a #\z) (char-range #\A #\Z))) ; ([a..z]|[A..Z])^+
     ; =>
