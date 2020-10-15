@@ -14,8 +14,11 @@ Lexer y parser
          (prefix-in re- parser-tools/lex-sre)
          parser-tools/yacc)
 
-(define-tokens a (NUM VAR BOOL)) ;Tokens que son contenedores --- data Tokens = NUM Int | VAR String | BOOL Bool
-(define-empty-tokens b (+ - * APP EOF LET ASSIGN IN LP RP FUN)) ;Tokens que no almacenan datos
+(define-tokens a (NUM VAR BOOLE)) ;Tokens que son contenedores --- data Tokens = NUM Int | VAR String | BOOL Bool
+(define-empty-tokens b (+ - * / = and or
+                          APP EOF LET ASSIGN IN
+                          LP RP LC RC
+                          FUN)) ;Tokens que no almacenan datos
 
 ; "fun (x:T) : T => x"
 ; [FUN,LP,VAR "x",TYPEOF,TYPE "T",RP,TYPEOF,TYPE "T",ACA,VAR "x",ATA,EOF]
@@ -56,19 +59,14 @@ Lexer y parser
    [(:: #\i #\n)
     ; =>
     (token-IN)]
+
+   [(:: #\a #\p #\p)
+    (token-APP)]
+
    
    [(:+ (:or (char-range #\a #\z) (char-range #\A #\Z))) ; ([a..z]|[A..Z])^+
     ; =>
     (token-VAR (string->symbol lexeme))]
-
-   [(:: #\# #\f)
-    ;=>
-    (token-BOOL (string->symbol lexeme))]
-
-     [(:: #\# #\t)
-    ;=>
-    (token-BOOL (string->symbol lexeme) )]
-
   
    ;<var>::= <car><digit>
    [(::(:or (char-range #\a #\z) (char-range #\A #\Z))(char-range #\0 #\9)) 
@@ -86,9 +84,13 @@ Lexer y parser
     (token-VAR (string->symbol lexeme))]
 
 
-  
+   [(:: #\# #\f)
+    ;=>
+    (token-BOOLE #f)]
 
-
+   [(:: #\# #\t)
+    ;=>
+    (token-BOOLE #t )]
    
 
    [(::  (:or #\- (epsilon)) (:: (:* (char-range #\0 #\9)) (:: (:or (:: #\. (char-range #\0 #\9)) (:: (char-range #\0 #\9)) #\.) (:* (char-range #\0 #\9)))))
@@ -116,7 +118,23 @@ Lexer y parser
     ;=>
     (token-RP)
     ]
+   
+   [#\/
+    ;=>
+    (token-/)]
 
+   [#\=
+    ;=>
+    (token-=)]
+
+   [#\[
+    ;=>
+    (token-LC)]
+
+   [#\]
+    ;=>
+    (token-RC)]
+   
    [whitespace ;Caso expecial
     ; =>
     (minHS-lexer input-port)] ;borramos todos los posibles espacios en blanco, tabuladores, etc
