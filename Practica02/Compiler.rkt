@@ -19,7 +19,8 @@ Lexer y parser
                           APP EOF LET ASSIGN IN
                           LP RP LC RC
                           FUN IF THEN ELSE
-                          ACA ATA)) ;Tokens que no almacenan datos
+                          ACA ATA
+                          INT BOOL FUNC)) ;Tokens que no almacenan datos
 
 ; "fun (x:T) : T => x"
 ; [FUN,LP,VAR "x",TYPEOF,TYPE "T",RP,TYPEOF,TYPE "T",ACA,VAR "x",ATA,EOF]
@@ -71,6 +72,19 @@ Lexer y parser
    [(:: #\# #\t)
     ;=>
     (token-BOOLE #t )]
+
+   [(:: (:or #\I #\i) #\n #\t)
+    ;=>
+    (token-INT)]
+
+   [(:: (:or #\B #\b) #\o #\o #\l)
+    ;=>
+    (token-BOOL)]
+
+   [(:: (:or #\F #\f) #\u #\n #\c)
+    ;=>
+    (token-FUNC)]
+   
    
 
    [(::  (:or #\- (epsilon)) (:: (:* (char-range #\0 #\9)) (:: (:or (:: #\. (char-range #\0 #\9)) (:: (char-range #\0 #\9)) #\.) (:* (char-range #\0 #\9)))))
