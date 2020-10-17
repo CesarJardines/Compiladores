@@ -9,7 +9,7 @@ Laboratorio: Fernando Abigail Galicia Mendoza
 Lexer y parser
 
 
-César
+César Eduardo Jardines Mendoza, 314071549
 Jerónimo Almeida Rodríguez, 418003815
 |#
 
