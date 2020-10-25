@@ -47,9 +47,9 @@ Lexer y parser
    (error void) ; error clause. Here can be some errors presented in the anlysis.
    (tokens a b) ; tokens clause. Here goes our tokens. In our case, we defined the tokens in the lexer script.
    (precs (nonassoc LP RP LC RC LB RB IF THEN ELSE FUN FUNF LET IN ATA NUM BOOLE VAR INT BOOL :)
-          (right Funf)
+          ;;(right FUNF)
           (left =)
-          (left app)
+          ;(left app)
           (left * /) ; precs clause. Here we can give some precedence of our language operators.
           (left - +)
           (left and or))
@@ -62,11 +62,11 @@ Lexer y parser
          ((exp - exp) (make-prim-exp - $1 $3))
          ((exp * exp) (make-prim-exp * $1 $3))
          ((exp / exp) (make-prim-exp / $1 $3))
-         ((exp or exp) (make-or-exp or $1 $3)) ;;falta agregar a gram
-         ((exp and exp) (make-and-exp and $1 $3))
-         ((exp app exp) (make-app-exp $1 $3))
+         ((exp or exp) (make-or-exp $1 $3)) ;;falta agregar a gram
+         ((exp and exp) (make-and-exp $1 $3))
+         ;;((exp APP exp) (make-app-exp $1 $3))
 
-         ((IF LP exp RP THEN LK exp RK ELSE LK exp RK) (if-then-exp $3 $7 $11))
+         ((IF LP exp RP THEN LB exp RB ELSE LB exp RB) (if-then-exp $3 $7 $11))
 
          ;LP y RP Para parentesis
          ;LC y RC Para brackets
@@ -96,9 +96,11 @@ Desired response:
 (if-exp (bool-exp #t) (num-exp 2) (num-exp 3))
 |#
 
+
+
 (display "\nExample 3: fun ([x:Int]:Int) => x\n")
 (let ((input (open-input-string "fun ([x:Int]:Int) => x")))
-  (minHS-parser (lex-this minHS-lexer input)))
+ (minHS-parser (lex-this minHS-lexer input)))
 #|
 Desired response:
 (fun-exp (typeof-exp (brack-exp (typeof-exp (var-exp 'x) (int-exp))) (int-exp)) (var-exp 'x))
@@ -106,7 +108,7 @@ Desired response:
 
 (display "\nExample 4: fun ([f:Func Int Int]:Int) => f app 1\n")
 (let ((input (open-input-string "fun ([f:Func Int Int]:Int) => f app 1")))
-  (minHS-parser (lex-this minHS-lexer input)))
+ (minHS-parser (lex-this minHS-lexer input)))
 #|
 Desired response:
 (fun-exp (typeof-exp (brack-exp (typeof-exp (var-exp 'f) (func-exp (int-exp) (int-exp)))) (int-exp)) (app-exp (var-exp 'f) (num-exp 1)))
