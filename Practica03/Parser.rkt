@@ -20,12 +20,6 @@ Lexer y parser
 (define-struct num-exp (n) #:transparent) ; For the numbers.
 (define-struct bool-exp (b) #:transparent) ; For the booleans.
 
-(define-struct typeof-exp (v e) #:transparent) ; For the type of operator ":".
-(define-struct typeof-f-exp (f t e) #:transparent) ; For the name and the parameters of the function (f), the returning type (t) and the body (e).
-(define-struct int-exp () #:transparent) ; For the Int type.
-(define-struct boole-exp () #:transparent) ; For the Bool type.
-; Note: There is a difference: bool is for values and boole is for type
-
 
 (define-struct prim-exp (op e1 e2) #:transparent) ; For the arithmetic operations.
 (define-struct if-then-exp (g e1 e2) #:transparent) ; For the if conditionals.
@@ -34,11 +28,18 @@ Lexer y parser
 (define-struct and-exp (exp1 exp2))
 (define-struct or-exp (exp1 exp2))
 (define-struct if-exp (g exp1 exp2))
+(define-struct app-exp (exp1 exp2))
+
+(define-struct typeof-exp (v e) #:transparent) ; For the type of operator ":".
+(define-struct typeof-f-exp (f t e) #:transparent) ; For the name and the parameters of the function (f), the returning type (t) and the body (e).
+(define-struct int-exp () #:transparent) ; For the Int type.
+(define-struct boole-exp () #:transparent) ; For the Bool type.
+; Note: There is a difference: bool is for values and boole is for type
 
 
 (define-struct par-exp (exp) #:transparent) ; For the parenthesis.
 (define-struct key-exp (exp) #:transparent) ; For the keys.
-(define-struct bra-exp (exp) #:transparent) ;Para los brackets
+(define-struct brack-exp (exp) #:transparent) ;Para los brackets
 
 (define minHS-parser
   (parser
@@ -46,8 +47,8 @@ Lexer y parser
    (end EOF) ; end clause. The parser ends when it reads the given symbol. In our case, EOF.
    (error void) ; error clause. Here can be some errors presented in the anlysis.
    (tokens a b) ; tokens clause. Here goes our tokens. In our case, we defined the tokens in the lexer script.
-   (precs (nonassoc LP RP LC RC LB RB IF THEN ELSE FUN FUNF LET IN ATA NUM BOOLE VAR INT BOOL :)
-          (right FUNC)
+   (precs (nonassoc LP RP LC RC LB RB IF THEN ELSE FUN FUNF LET IN ACA ATA NUM BOOLE VAR INT BOOL)
+          (left ASSIGN)
           (left APP)
           (left =)
           (left * /) ; precs clause. Here we can give some precedence of our language operators.
@@ -57,14 +58,19 @@ Lexer y parser
     (exp ((NUM) (num-exp $1)) ;; ((Token) (constructor $1 $2 ... $n)) [1,2,3,...,n]
          ((BOOLE) (bool-exp $1)) 
          ((VAR) (var-exp $1))
+         ((INT) (int-exp))
+         ((BOOL) (boole-exp))
+         ((:)(typeof-exp))
 
          ((exp + exp) (make-prim-exp + $1 $3)) ; ((e1 e2 e3 .... en) (constructor $1 $2 $3 ... $n))
          ((exp - exp) (make-prim-exp - $1 $3))
          ((exp * exp) (make-prim-exp * $1 $3))
          ((exp / exp) (make-prim-exp / $1 $3))
-         ((exp or exp) (make-or-exp $1 $3)) ;;falta agregar a gram
+         ((exp or exp) (make-or-exp $1 $3)) 
          ((exp and exp) (make-and-exp $1 $3))
-         ;;((exp APP exp) (make-app-exp $1 $3))
+         ((exp APP exp) (make-app-exp $1 $3))
+
+         ((exp TYPEOF exp)(typeof-exp $1 $3))
 
          ((IF LP exp RP THEN LB exp RB ELSE LB exp RB) (if-then-exp $3 $7 $11))
 
@@ -73,11 +79,15 @@ Lexer y parser
          ;LB y RB Para llaves
          ((LP exp RP) (make-par-exp $2))
          ((LB exp RB) (make-key-exp $2))
-         ((LC exp LC) (make-bra-exp $2)))
+         ((LC exp LC) (make-brack-exp $2)))
+    
 
-         (type ((INT) (int-exp))
-               ((BOOL) (boole-exp))
-               ((FUNC type type) (make-func-exp $2 $3)))
+    
+ 
+         ;;((FUNC type type) (make-func-exp $2 $3))
+
+        
+         
     
     )))
 
@@ -102,9 +112,9 @@ Desired response:
 |#
 
 
-
+;;fun ([x:Int]:Int) => x
 (display "\nExample 3: fun ([x:Int]:Int) => x\n")
-(let ((input (open-input-string "fun ([x:Int]:Int) => x")))
+(let ((input (open-input-string "x:Int")))
  (minHS-parser (lex-this minHS-lexer input)))
 #|
 Desired response:

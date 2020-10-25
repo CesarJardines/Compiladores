@@ -77,7 +77,7 @@ Jerónimo Almeida Rodríguez, 418003815
     ;=>
     (token-BOOLE #t )]
 
-   [(:: (:or #\I #\i) #\n #\t)
+   [(:: #\I #\n #\t)
     ;=>
     (token-INT)]
 
