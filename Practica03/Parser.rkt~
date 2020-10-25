@@ -32,7 +32,6 @@ Lexer y parser
 
 (define-struct par-exp (exp) #:transparent) ; For the parenthesis.
 (define-struct key-exp (exp) #:transparent) ; For the keys.
-(define-struct bra-exp (exp) #:transparent) ;Para los brackets
 
 (define minHS-parser
   (parser
@@ -51,18 +50,10 @@ Lexer y parser
          ((exp - exp) (make-prim-exp - $1 $3))
          ((exp * exp) (make-prim-exp * $1 $3))
          ((exp / exp) (make-prim-exp / $1 $3))
-         ((exp or exp) (make-or-exp or $1 $3)) ;;falta agregar a gram
-         ((exp and exp) (make-and-exp and $1 $3))
-         ((exp app exp) (make-app-exp $1 $3))
 
          ((IF LP exp RP THEN LK exp RK ELSE LK exp RK) (if-then-exp $3 $7 $11))
 
-         ;LP y RP Para parentesis
-         ;LC y RC Para brackets
-         ;LB y RB Para llaves
-         ((LP exp RP) (make-par-exp $2))
-         ((LB exp RB) (make-key-exp $2))
-         ((LC exp LC) (make-bra-exp $2)))
+         ((LP exp RP) (make-par-exp $2)))
     )))
 
 ; A function that stores our lexer into a lambda function without arguments.
