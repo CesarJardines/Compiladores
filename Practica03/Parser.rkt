@@ -30,6 +30,12 @@ Lexer y parser
 (define-struct prim-exp (op e1 e2) #:transparent) ; For the arithmetic operations.
 (define-struct if-then-exp (g e1 e2) #:transparent) ; For the if conditionals.
 
+(define-struct func-exp (t1 t2))
+(define-struct and-exp (exp1 exp2))
+(define-struct or-exp (exp1 exp2))
+(define-struct if-exp (g exp1 exp2))
+
+
 (define-struct par-exp (exp) #:transparent) ; For the parenthesis.
 (define-struct key-exp (exp) #:transparent) ; For the keys.
 (define-struct bra-exp (exp) #:transparent) ;Para los brackets
