@@ -46,8 +46,8 @@ Lexer y parser
    (end EOF) ; end clause. The parser ends when it reads the given symbol. In our case, EOF.
    (error void) ; error clause. Here can be some errors presented in the anlysis.
    (tokens a b) ; tokens clause. Here goes our tokens. In our case, we defined the tokens in the lexer script.
-   (precs (nonassoc LP RP LC RC LB RB IF THEN ELSE FUN FUNF LET IN END NUM BOOLE VAR INT BOOL :)
-          (right Func)
+   (precs (nonassoc LP RP LC RC LB RB IF THEN ELSE FUN FUNF LET IN ATA NUM BOOLE VAR INT BOOL :)
+          (right Funf)
           (left =)
           (left app)
           (left * /) ; precs clause. Here we can give some precedence of our language operators.
