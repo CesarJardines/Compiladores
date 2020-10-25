@@ -7,6 +7,10 @@ Ayudante: Juan Alfonso Garduño Solís
 Laboratorio: Fernando Abigail Galicia Mendoza
 
 Lexer y parser
+
+
+César Eduardo Jardines Mendoza, 314071549
+Jerónimo Almeida Rodríguez, 418003815
 |#
 
 (require parser-tools/lex
@@ -17,8 +21,8 @@ Lexer y parser
 (define-tokens a (NUM VAR BOOLE)) ;Tokens que son contenedores --- data Tokens = NUM Int | VAR String | BOOL Bool
 (define-empty-tokens b (+ - * / = and or :
                           APP EOF LET ASSIGN IN
-                          LP RP LC RC
-                          FUN IF THEN ELSE
+                          LP RP LC RC LB RB
+                          FUN FUNF IF THEN ELSE
                           ACA ATA
                           INT BOOL FUNC)) ;Tokens que no almacenan datos
 
@@ -44,7 +48,7 @@ Lexer y parser
    [#\0
     ;=>
     (token-VAR 'z)]
-   
+
    ; :: s*
    [(:: #\l #\e #\t) ; Expresion regular let
     ; =>
@@ -84,8 +88,12 @@ Lexer y parser
    [(:: (:or #\F #\f) #\u #\n #\c)
     ;=>
     (token-FUNC)]
-   
-   
+
+  [(:: (:or #\F #\f) #\u #\n #\f)
+    ; =>
+    (token-FUNF)]
+
+
 
    [(::  (:or #\- (epsilon)) (:: (:* (char-range #\0 #\9)) (:: (:or (:: #\. (char-range #\0 #\9)) (:: (char-range #\0 #\9)) #\.) (:* (char-range #\0 #\9)))))
     ; =>
@@ -112,7 +120,7 @@ Lexer y parser
     ;=>
     (token-RP)
     ]
-   
+
    [#\/
     ;=>
     (token-/)]
@@ -128,6 +136,14 @@ Lexer y parser
    [#\]
     ;=>
     (token-RC)]
+
+    [#\{
+     ;=>
+     (token-LB)]
+
+    [#\}
+     ;=>
+     (token-RB)]
 
    [(:: #\o #\r)
     ;=>
@@ -156,22 +172,22 @@ Lexer y parser
    [(:+ (:or (char-range #\a #\z) (char-range #\A #\Z))) ; ([a..z]|[A..Z])^+
     ; =>
     (token-VAR (string->symbol lexeme))]
-  
+
    ;<var>::= <car><digit>
-   [(::(:or (char-range #\a #\z) (char-range #\A #\Z))(char-range #\0 #\9)) 
+   [(::(:or (char-range #\a #\z) (char-range #\A #\Z))(char-range #\0 #\9))
     ;=>
     (token-VAR (string->symbol lexeme))]
-   
+
    ;<var>::= <car><var>
-   [(::  (:+ (char-range #\a #\z))  (::(:+(::(char-range #\a #\z) (::(char-range #\0 #\9))))) ) 
+   [(::  (:+ (char-range #\a #\z))  (::(:+(::(char-range #\a #\z) (::(char-range #\0 #\9))))) )
     ;=>
     (token-VAR (string->symbol lexeme))]
 
    ;<var>::= <car><digit><var>
-   [(::  (:+ (::(char-range #\a #\z) (::(char-range #\0 #\9))))  (::(:+(::(char-range #\a #\z) (::(char-range #\0 #\9)))))) 
+   [(::  (:+ (::(char-range #\a #\z) (::(char-range #\0 #\9))))  (::(:+(::(char-range #\a #\z) (::(char-range #\0 #\9))))))
     ;=>
     (token-VAR (string->symbol lexeme))]
-   
+
    [whitespace ;Caso expecial
     ; =>
     (minHS-lexer input-port)] ;borramos todos los posibles espacios en blanco, tabuladores, etc
@@ -190,12 +206,73 @@ Lexer y parser
 ; e :: = num | x | bool | opu(e) | opb(e,e) | fun [(x:T)]* e | ...
 
 ; Experimentos bonitos y romanticos
+
+;El objetivo de estos ejemplos se limita a mostrar que el programa detecta la aparición del primer
+; token que encuentra.
 (let ((input (open-input-string "3 - 3.3 + 6")))
   (minHS-lexer input))
 
-(let ((input (open-input-file "EjemplitoChido.mhs")))
-  (begin
-    (print (minHS-lexer input))
-    (close-input-port input)))
+(let ((input (open-input-string "{3 - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "Funf 3 - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "(3 - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "if  3 - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "0.3 - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "[ 3 - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "]3 - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "-0.33 - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "- 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "then 3 - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "* - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "assign - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "app - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "False 3 - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "Bool - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "Num - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "INT - 3.3 + 6")))
+  (minHS-lexer input))
+
+(let ((input (open-input-string "func - 3.3 + 6")))
+  (minHS-lexer input))
+
+
+
+
+
+;(let ((input (open-input-file "EjemplitoChido.mhs")))
+ ;(begin
+  ; (print (minHS-lexer input))
+   ;(close-input-port input)))
 
 ; Proximamente un parser
