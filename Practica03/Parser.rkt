@@ -47,9 +47,9 @@ Lexer y parser
    (error void) ; error clause. Here can be some errors presented in the anlysis.
    (tokens a b) ; tokens clause. Here goes our tokens. In our case, we defined the tokens in the lexer script.
    (precs (nonassoc LP RP LC RC LB RB IF THEN ELSE FUN FUNF LET IN ATA NUM BOOLE VAR INT BOOL :)
-          ;;(right FUNF)
+          (right FUNC)
+          (left APP)
           (left =)
-          ;(left app)
           (left * /) ; precs clause. Here we can give some precedence of our language operators.
           (left - +)
           (left and or))
@@ -74,6 +74,11 @@ Lexer y parser
          ((LP exp RP) (make-par-exp $2))
          ((LB exp RB) (make-key-exp $2))
          ((LC exp LC) (make-bra-exp $2)))
+
+         (type ((INT) (int-exp))
+               ((BOOL) (boole-exp))
+               ((FUNC type type) (make-func-exp $2 $3)))
+    
     )))
 
 ; A function that stores our lexer into a lambda function without arguments.
