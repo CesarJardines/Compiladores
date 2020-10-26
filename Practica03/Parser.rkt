@@ -19,7 +19,7 @@ Lexer y parser
 (define-struct var-exp (i) #:transparent) ; For the variables.
 (define-struct num-exp (n) #:transparent) ; For the numbers.
 (define-struct bool-exp (b) #:transparent) ; For the booleans.
-(define-struct list-exp (l l2) #:transparent)
+(define-struct list-exp (l) #:transparent)
 
 (define-struct prim-exp (op e1 e2) #:transparent) ; For the arithmetic operations.
 (define-struct if-then-exp (g e1 e2) #:transparent) ; For the if conditionals.
@@ -72,9 +72,12 @@ Lexer y parser
          ((exp and exp) (make-and-exp $1 $3))
          ((exp APP exp) (make-app-exp $1 $3))
          ;;fun ([x:Int]:Int) => x
-         
-         ((FUN LP list RP ATA exp )(make-fun-exp $3 $6))
 
+         ;Aqui se trata de hacer fun ([x:Int]:Int) => x donde list es otra variable ya declarada en compiler
+         ((FUN LP list RP ACA exp )(make-fun-exp $3 $6))
+         
+
+         ;Funcion prueba solo para x:Int
          ((exp : exp)(typeof-exp $1 $3))
     
           
@@ -87,14 +90,13 @@ Lexer y parser
          ((LP exp RP) (make-par-exp $2))
          ((LB exp RB) (make-key-exp $2))
          ((LC exp LC) (make-brack-exp $2)))
-    
-     (list ((exp : exp)(typeof-exp $1 $3))
-               ((LC list RC)(make-brack-exp $2)))
 
-     
-    
- 
-         ;;((FUNC type type) (make-func-exp $2 $3))
+    ;Esta vendría siendo la estrella donde list puede tomar 3 valores
+     (list ((exp : exp)(make-typeof-exp $1 $3))
+           ((list : exp) (make-typeof-exp $1 $3))
+           ((LC list RC)(make-brack-exp $2)))
+
+  
 
         
          
@@ -124,7 +126,7 @@ Desired response:
 
 ;;fun ([x:Int]:Int) => x
 (display "\nExample 3: fun ([x:Int]:Int) => x\n")
-(let ((input (open-input-string "fun ([x:Int]) => x")))
+(let ((input (open-input-string "fun ([x:Int]:Int) => x")))
  (minHS-parser (lex-this minHS-lexer input)))
 #|
 Desired response:

@@ -92,7 +92,7 @@ Jerónimo Almeida Rodríguez, 418003815
     ;=>
     (token-FUNC)]
 
-   [(:: #\F #\u #\n #\c)
+   [(:: #\F #\u #\n)
     (token-FUN)]
 
   [(:: (:or #\F #\f) #\u #\n #\f)
