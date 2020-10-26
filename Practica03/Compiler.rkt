@@ -18,13 +18,13 @@ Jerónimo Almeida Rodríguez, 418003815
          (prefix-in re- parser-tools/lex-sre)
          parser-tools/yacc)
 
-(define-tokens a (NUM VAR BOOLE)) ;Tokens que son contenedores --- data Tokens = NUM Int | VAR String | BOOL Bool
+(define-tokens a (NUM VAR BOOLE )) ;Tokens que son contenedores --- data Tokens = NUM Int | VAR String | BOOL Bool
 (define-empty-tokens b (+ - * / = and or :
                           APP EOF LET ASSIGN IN
                           LP RP LC RC LB RB
                           FUN FUNF IF THEN ELSE
                           ACA ATA
-                          INT BOOL FUNC)) ;Tokens que no almacenan datos
+                          INT BOOL FUNC LIST)) ;Tokens que no almacenan datos
 
 ; "fun (x:T) : T => x"
 ; [FUN,LP,VAR "x",TYPEOF,TYPE "T",RP,TYPEOF,TYPE "T",ACA,VAR "x",ATA,EOF]
@@ -62,6 +62,9 @@ Jerónimo Almeida Rodríguez, 418003815
     ; =>
     (token-ASSIGN)]
 
+   [(:: #\l #\i #\s #\t)
+   (token-LIST)]
+
    [(:: #\i #\n)
     ; =>
     (token-IN)]
@@ -89,9 +92,14 @@ Jerónimo Almeida Rodríguez, 418003815
     ;=>
     (token-FUNC)]
 
+   [(:: #\F #\u #\n #\c)
+    (token-FUN)]
+
   [(:: (:or #\F #\f) #\u #\n #\f)
     ; =>
     (token-FUNF)]
+
+
 
 
 
@@ -168,6 +176,9 @@ Jerónimo Almeida Rodríguez, 418003815
    [(:: #\= #\>)
     ;=>
     (token-ACA)]
+
+   [(:: #\:)
+    (token-:)]
 
    [(:+ (:or (char-range #\a #\z) (char-range #\A #\Z))) ; ([a..z]|[A..Z])^+
     ; =>

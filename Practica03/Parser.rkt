@@ -19,12 +19,13 @@ Lexer y parser
 (define-struct var-exp (i) #:transparent) ; For the variables.
 (define-struct num-exp (n) #:transparent) ; For the numbers.
 (define-struct bool-exp (b) #:transparent) ; For the booleans.
-
+(define-struct list-exp (l l2) #:transparent)
 
 (define-struct prim-exp (op e1 e2) #:transparent) ; For the arithmetic operations.
 (define-struct if-then-exp (g e1 e2) #:transparent) ; For the if conditionals.
 
 (define-struct func-exp (t1 t2))
+(define-struct fun-exp (t1 t2))
 (define-struct and-exp (exp1 exp2))
 (define-struct or-exp (exp1 exp2))
 (define-struct if-exp (g exp1 exp2))
@@ -47,10 +48,12 @@ Lexer y parser
    (end EOF) ; end clause. The parser ends when it reads the given symbol. In our case, EOF.
    (error void) ; error clause. Here can be some errors presented in the anlysis.
    (tokens a b) ; tokens clause. Here goes our tokens. In our case, we defined the tokens in the lexer script.
-   (precs (nonassoc LP RP LC RC LB RB IF THEN ELSE FUN FUNF LET IN ACA ATA NUM BOOLE VAR INT BOOL)
+   (precs (nonassoc LP RP LC RC LB RB IF THEN ELSE FUN FUNF LET IN ACA ATA NUM BOOLE VAR INT BOOL LIST )
           (left ASSIGN)
+          (right FUNC)
           (left APP)
           (left =)
+          (left :)
           (left * /) ; precs clause. Here we can give some precedence of our language operators.
           (left - +)
           (left and or))
@@ -60,7 +63,6 @@ Lexer y parser
          ((VAR) (var-exp $1))
          ((INT) (int-exp))
          ((BOOL) (boole-exp))
-         ((:)(typeof-exp))
 
          ((exp + exp) (make-prim-exp + $1 $3)) ; ((e1 e2 e3 .... en) (constructor $1 $2 $3 ... $n))
          ((exp - exp) (make-prim-exp - $1 $3))
@@ -69,8 +71,13 @@ Lexer y parser
          ((exp or exp) (make-or-exp $1 $3)) 
          ((exp and exp) (make-and-exp $1 $3))
          ((exp APP exp) (make-app-exp $1 $3))
+         ;;fun ([x:Int]:Int) => x
+         
+         ((FUN LP list RP ATA exp )(make-fun-exp $3 $6))
 
-         ((exp TYPEOF exp)(typeof-exp $1 $3))
+         ((exp : exp)(typeof-exp $1 $3))
+    
+          
 
          ((IF LP exp RP THEN LB exp RB ELSE LB exp RB) (if-then-exp $3 $7 $11))
 
@@ -81,7 +88,10 @@ Lexer y parser
          ((LB exp RB) (make-key-exp $2))
          ((LC exp LC) (make-brack-exp $2)))
     
+     (list ((exp : exp)(typeof-exp $1 $3))
+               ((LC list RC)(make-brack-exp $2)))
 
+     
     
  
          ;;((FUNC type type) (make-func-exp $2 $3))
@@ -114,7 +124,7 @@ Desired response:
 
 ;;fun ([x:Int]:Int) => x
 (display "\nExample 3: fun ([x:Int]:Int) => x\n")
-(let ((input (open-input-string "x:Int")))
+(let ((input (open-input-string "fun ([x:Int]) => x")))
  (minHS-parser (lex-this minHS-lexer input)))
 #|
 Desired response:
