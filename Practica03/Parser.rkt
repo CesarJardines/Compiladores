@@ -24,12 +24,12 @@ Lexer y parser
 (define-struct prim-exp (op e1 e2) #:transparent) ; For the arithmetic operations.
 (define-struct if-then-exp (g e1 e2) #:transparent) ; For the if conditionals.
 
-(define-struct func-exp (t1 t2))
-(define-struct fun-exp (t1 t2))
-(define-struct and-exp (exp1 exp2))
-(define-struct or-exp (exp1 exp2))
-(define-struct if-exp (g exp1 exp2))
-(define-struct app-exp (exp1 exp2))
+(define-struct func-exp (t1 t2) #:transparent)
+(define-struct fun-exp (t1 t2) #:transparent)
+(define-struct and-exp (exp1 exp2) #:transparent)
+(define-struct or-exp (exp1 exp2) #:transparent)
+(define-struct if-exp (g exp1 exp2) #:transparent)
+(define-struct app-exp (exp1 exp2) #:transparent)
 
 (define-struct typeof-exp (v e) #:transparent) ; For the type of operator ":".
 (define-struct typeof-f-exp (f t e) #:transparent) ; For the name and the parameters of the function (f), the returning type (t) and the body (e).
@@ -44,7 +44,7 @@ Lexer y parser
 
 (define minHS-parser
   (parser
-   (start exp) ; start clause. The exp is the initial symbol where the parser begins the analysis. 
+   (start exp) ; start clause. The exp is the initial symbol where the parser begins the analysis.
    (end EOF) ; end clause. The parser ends when it reads the given symbol. In our case, EOF.
    (error void) ; error clause. Here can be some errors presented in the anlysis.
    (tokens a b) ; tokens clause. Here goes our tokens. In our case, we defined the tokens in the lexer script.
@@ -59,7 +59,7 @@ Lexer y parser
           (left and or))
    (grammar ; grammar clause. Here goes the grammar of minHS.
     (exp ((NUM) (num-exp $1)) ;; ((Token) (constructor $1 $2 ... $n)) [1,2,3,...,n]
-         ((BOOLE) (bool-exp $1)) 
+         ((BOOLE) (bool-exp $1))
          ((VAR) (var-exp $1))
          ((INT) (int-exp))
          ((BOOL) (boole-exp))
@@ -68,19 +68,19 @@ Lexer y parser
          ((exp - exp) (make-prim-exp - $1 $3))
          ((exp * exp) (make-prim-exp * $1 $3))
          ((exp / exp) (make-prim-exp / $1 $3))
-         ((exp or exp) (make-or-exp $1 $3)) 
+         ((exp or exp) (make-or-exp $1 $3))
          ((exp and exp) (make-and-exp $1 $3))
          ((exp APP exp) (make-app-exp $1 $3))
+         ((exp : exp)(typeof-exp $1 $3))
          ;;fun ([x:Int]:Int) => x
 
          ;Aqui se trata de hacer fun ([x:Int]:Int) => x donde list es otra variable ya declarada en compiler
          ((FUN LP list RP ACA exp )(make-fun-exp $3 $6))
-         
+
 
          ;Funcion prueba solo para x:Int
-         ((exp : exp)(typeof-exp $1 $3))
-    
-          
+
+
 
          ((IF LP exp RP THEN LB exp RB ELSE LB exp RB) (if-then-exp $3 $7 $11))
 
@@ -96,11 +96,11 @@ Lexer y parser
            ((list : exp) (make-typeof-exp $1 $3))
            ((LC list RC)(make-brack-exp $2)))
 
-  
 
-        
-         
-    
+
+
+
+
     )))
 
 ; A function that stores our lexer into a lambda function without arguments.

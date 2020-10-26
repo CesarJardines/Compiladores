@@ -88,14 +88,14 @@ Jerónimo Almeida Rodríguez, 418003815
     ;=>
     (token-BOOL)]
 
-   [(:: (:or #\F #\f) #\u #\n #\c)
+   [(:: #\F #\u #\n #\c)
     ;=>
     (token-FUNC)]
 
-   [(:: #\F #\u #\n)
+   [(:: #\f #\u #\n)
     (token-FUN)]
 
-  [(:: (:or #\F #\f) #\u #\n #\f)
+  [(:: #\f #\u #\n #\f)
     ; =>
     (token-FUNF)]
 
@@ -220,65 +220,6 @@ Jerónimo Almeida Rodríguez, 418003815
 
 ;El objetivo de estos ejemplos se limita a mostrar que el programa detecta la aparición del primer
 ; token que encuentra.
-(let ((input (open-input-string "3 - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "{3 - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "Funf 3 - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "(3 - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "if  3 - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "0.3 - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "[ 3 - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "]3 - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "-0.33 - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "- 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "then 3 - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "* - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "assign - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "app - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "False 3 - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "Bool - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "Num - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "INT - 3.3 + 6")))
-  (minHS-lexer input))
-
-(let ((input (open-input-string "func - 3.3 + 6")))
-  (minHS-lexer input))
-
-
-
 
 
 ;(let ((input (open-input-file "EjemplitoChido.mhs")))
