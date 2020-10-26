@@ -26,10 +26,15 @@ Lexer y parser
 
 (define-struct func-exp (t1 t2) #:transparent)
 (define-struct fun-exp (t1 t2) #:transparent)
+(define-struct fun-f-exp (t1 t2) #:transparent)
 (define-struct and-exp (exp1 exp2) #:transparent)
 (define-struct or-exp (exp1 exp2) #:transparent)
 (define-struct if-exp (g exp1 exp2) #:transparent)
 (define-struct app-exp (exp1 exp2) #:transparent)
+(define-struct assign-exp (exp1 exp2) #:transparent)
+(define-struct let-exp (e b) #:transparent)
+;(define-struct func-exp (t1 t2) #:transparent)
+;(define-struct fun-exp (t1 t2) #:transparent)
 
 (define-struct typeof-exp (v e) #:transparent) ; For the type of operator ":".
 (define-struct typeof-f-exp (f t e) #:transparent) ; For the name and the parameters of the function (f), the returning type (t) and the body (e).
@@ -77,13 +82,24 @@ Lexer y parser
          ;Aqui se trata de hacer fun ([x:Int]:Int) => x donde list es otra variable ya declarada en compiler
          ((FUN LP list RP ACA exp )(make-fun-exp $3 $6))
 
-         ;
-         ((FUNC exp exp)(func-exp $2 $3))
+         ; Se define para crear el ASA de Func
+         ;((FUNC exp exp)(func-exp $2 $3))
 
+         ; ASA de funF
+         ;((FUNF LP exp LP list RP RP ACA exp)(func-exp $3 $5))
+         ;((FUNF LP exp LC list RC : type RP ACA exp) (fun-f-exp (typeof-exp $3 $5) $8 $11))
 
+         ;FUN
+         ((FUN LP list RP ACA exp )(make-fun-exp $3 $6))
+         ;FUNF
+         ((FUNF LP exp LC list RC : type RP ACA exp) (funf-exp (typeof-exp $3 $5) $8 $11))
+         ;APP
+         ;((exp APP exp) (app-exp $1 $3))
+         ;let
+         ;((LET LP le RP IN exp END) (let-exp (make-brack-exp $3) $6))
+
+;funF (sumita ([x:Int][y:Int]):Int) => x+y
          ;Funcion prueba solo para x:Int
-
-
 
          ((IF LP exp RP THEN LB exp RB ELSE LB exp RB) (if-then-exp $3 $7 $11))
 
@@ -94,10 +110,27 @@ Lexer y parser
          ((LB exp RB) (make-key-exp $2))
          ((LC exp LC) (make-brack-exp $2)))
 
+         ;FUN
+          ((FUN LP list RP ACA exp )(make-fun-exp $3 $6))
+          ;FUNF
+          ((FUNF LP exp LC list RC : type RP ACA exp) (funf-exp (typeof-exp $3 $5) $8 $11))
+          ;APP
+          ((exp APP exp) (app-exp $1 $3))
+          ;let
+          ((LET LP le RP IN exp END) (let-exp (make-brack-exp $3) $6))
+
     ;Esta vendría siendo la estrella donde list puede tomar 3 valores
      (list ((exp : exp)(make-typeof-exp $1 $3))
            ((list : exp) (make-typeof-exp $1 $3))
            ((LC list RC)(make-brack-exp $2)))
+
+     (type ((INT)(int-exp))
+            ((BOOL)(boole-exp))
+            ((FUNC type type) (make-func-exp $2 $3)))
+
+    (le
+         ((LC exp ASSIGN exp RC) (assign-exp $2 $4))
+         ((LC exp ASSIGN exp RC le) (appt-exp (assign-exp $2 $4) $6)))
 
 
 
