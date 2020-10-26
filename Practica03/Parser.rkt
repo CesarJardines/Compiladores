@@ -77,6 +77,9 @@ Lexer y parser
          ;Aqui se trata de hacer fun ([x:Int]:Int) => x donde list es otra variable ya declarada en compiler
          ((FUN LP list RP ACA exp )(make-fun-exp $3 $6))
 
+         ;
+         ((FUNC exp exp)(func-exp $2 $3))
+
 
          ;Funcion prueba solo para x:Int
 
