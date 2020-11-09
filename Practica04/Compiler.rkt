@@ -6,6 +6,10 @@ Profesora: Dra. Lourdes del Carmen Gonzalez Huesca
 Ayudante: Juan Alfonso Garduño Solís
 Laboratorio: Fernando Abigail Galicia Mendoza
 Lexer y parser
+
+César Eduardo Jardines Mendoza, 314071549
+Jerónimo Almeida Rodríguez, 418003815
+
 |#
 
 (require parser-tools/lex
@@ -74,9 +78,9 @@ Lexer y parser
     ;=>
     (token-INT)]
    
-   [(:: #\F #\u #\n #\c)
+   ;[(:: #\F #\u #\n #\c)
     ;=>
-    (token-FUNC)]
+    ;(token-FUNC)]
    
    [(:: #\# #\t)
     ;=>
@@ -179,8 +183,7 @@ Lexer y parser
     (token-VAR (string->symbol lexeme))]
 
     [(:: (:+ (char-range #\a #\z)) ; a char
-        (:or ;;(:+ (char-range #\a #\z)) ; more chars
-             ;;(:+ (char-range #\0 #\9)) ; u num
+        (:or 
              (:* (:: (:* (char-range #\a #\z)) (:* (char-range #\0 #\9)))))) ;; chars and nums
              ;;(epsilon))) ;; nothing
     ; =>

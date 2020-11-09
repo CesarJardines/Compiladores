@@ -6,6 +6,10 @@ Profesora: Dra. Lourdes del Carmen Gonzalez Huesca
 Ayudante: Juan Alfonso Garduño Solís
 Laboratorio: Fernando Abigail Galicia Mendoza
 Lexer y parser
+
+César Eduardo Jardines Mendoza, 314071549
+Jerónimo Almeida Rodríguez, 418003815
+
 |#
 
 (require "Compiler.rkt" ;; Here goes your lexer file. In my case I called "Compiler.rkt".
@@ -33,7 +37,7 @@ Lexer y parser
 (define-struct prim-exp (op e1 e2) #:transparent)     ; For the arithmetic operations.
 (define-struct assign-exp (e1 e2) #:transparent)      ; For the assignment expr.
 (define-struct if-then-exp (g e1 e2) #:transparent)   ; For the if conditionals.
-(define-struct let-exp (as body) #:transparent)       
+(define-struct let-exp (e b) #:transparent)       
 (define-struct fun-exp (lv e) #:transparent)          
 (define-struct fun-f-exp (lv t e) #:transparent)      
 (define-struct func-exp (e1 e2) #:transparent)        
@@ -78,33 +82,36 @@ Lexer y parser
      ((IF LP exp RP THEN LK exp RK) (if-then-exp1 $3 $7))
 
      
-     ((IF LP exp RP THEN LK exp RK ELSE LK exp RK) (if-then-exp $3 $7 $11));
-     ((FUN LP vlf RP ACA exp) (fun-exp $3 $6));
-     ((FUNF LP exp LP vlfF RP TYPEOF type RP ACA exp) (fun-f-exp (typeof-exp $3 $5) $8 $11));;
-     ((FUNC type type) (func-exp $2 $3));;
-     ((exp APP exp) (app-exp $1 $3));;
-     ((LET LP ovl RP IN exp END) (let-exp (make-brack-exp $3) $6))
-     ((LP exp RP) (make-par-exp $2));;
+     ((IF LP exp RP THEN LK exp RK ELSE LK exp RK) (if-then-exp $3 $7 $11))
+     ((FUN LP funn RP ACA exp) (fun-exp $3 $6))
+     ((FUNF LP exp LP TO RP TYPEOF type RP ACA exp) (fun-f-exp (typeof-exp $3 $5) $8 $11));;
+     ;;((FUNC type type) (func-exp $2 $3)) SE ELIMINA POR SER INSTRUCCIÓN DE LA PRÁCTICAS
+     ((exp APP exp) (app-exp $1 $3))
+     ((LET LP TE RP IN exp END) (let-exp (make-brack-exp $3) $6))
+     ((LP exp RP) (make-par-exp $2))
      ((LS exp RS) (make-brack-exp $2))
      ((LK exp RK) (make-key-exp $2))
-     ((exp ASSIGN exp) (assign-exp $1 $3));;
+     ((exp ASSIGN exp) (assign-exp $1 $3))
      ((exp TYPEOF type) (typeof-exp $1 $3)))
+    
     (type
      ((INT) (int-exp))
      ((BOOLE) (boole-exp))
      ((FUNC type type) (func-exp $2 $3))
-     ((LP type RP) (par-exp $2))
-     )
-    (vlf 
+     ((LP type RP) (par-exp $2)))
+    
+    (funn 
      ((exp TYPEOF type) (typeof-exp $1 $3))
-     ((LS vlf RS TYPEOF type) (typeof-exp $2 $5))
-     ((vlf vlf) (app-t-exp $1 $2)))
-    (vlfF 
+     ((LS funn RS TYPEOF type) (typeof-exp $2 $5))
+     ((funn funn) (app-t-exp $1 $2)))
+    
+    (TO 
      ((LS exp TYPEOF type RS) (make-brack-exp (typeof-exp $2 $4)))
-     ((LS exp TYPEOF type RS vlfF) (app-t-exp (typeof-exp $2 $4) $6)))
-    (ovl 
+     ((LS exp TYPEOF type RS TO) (app-t-exp (typeof-exp $2 $4) $6)))
+    
+    (TE 
      ((LS exp ASSIGN exp RS) (assign-exp $2 $4))
-     ((LS exp ASSIGN exp RS ovl) (app-t-exp (assign-exp $2 $4) $6)))
+     ((LS exp ASSIGN exp RS TE) (app-t-exp (assign-exp $2 $4) $6)))
     )))
 
 ; A function that stores our lexer into a lambda function without arguments.
@@ -113,9 +120,9 @@ Lexer y parser
 ;A lot of examples.
 #|
 (display "Example 1: 3 - (3 / 6)\n")
+|#
 (let ((input (open-input-string "3 - (3 / 6)")))
   (minHS-parser (lex-this minHS-lexer input)))
-|#
 #|
 Desired response:
 (prim-exp #<procedure:-> (num-exp 3) (par-exp (prim-exp #<procedure:/> (num-exp 3) (num-exp 6))))
