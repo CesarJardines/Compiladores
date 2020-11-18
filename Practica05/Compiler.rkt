@@ -6,6 +6,10 @@ Profesora: Dra. Lourdes del Carmen Gonzalez Huesca
 Ayudante: Juan Alfonso Garduño Solís
 Laboratorio: Fernando Abigail Galicia Mendoza
 Lexer y parser
+
+César Eduardo Jardines Mendoza, 314071549
+Jerónimo Almeida Rodríguez, 418003815
+
 |#
 
 (require parser-tools/lex
@@ -26,7 +30,8 @@ Lexer y parser
                         FUN TYPEOF ACA
                         FUNF 
                         APP  
-                        EOF 
+                        EOF
+                        BEGIN
                         ))
 ; Esta definicion pertenece a parsers-tools/lex-ptv-v200
 ; pero al importar esta biblioteca, causa problemas de sintaxis con los
@@ -42,63 +47,126 @@ Lexer y parser
    ;Token]
    ; prim 
    [(:: #\+)
+    ;=>
     (token-+)]
+   
    [(:: #\-)
+    ;=>
     (token--)]
+   
    [(:: #\*)
+    ;=>
     (token-*)]
+   
    [(:: #\/)
+    ;=>
     (token-/)]
+   
    [(:: #\a #\n #\d)
+    ;=>
     (token-AND)]
+   
    [(:: #\o #\r)
+    ;=>
     (token-OR)]
+   
    [(:: #\B #\o #\o #\l)
+    ;=>
     (token-BOOLE)]
+   
    [(:: #\I #\n #\t)
+    ;=>
     (token-INT)]
-   [(:: #\F #\u #\n #\c)
-    (token-FUNC)]
+   
+   ;[(:: #\F #\u #\n #\c)
+    ;=>
+    ;(token-FUNC)]
+   
    [(:: #\# #\t)
+    ;=>
     (token-BOOL #t)]
+   
    [(:: #\# #\f)
+    ;=>
     (token-BOOL #f)]
+   
    [(:: #\()
-    (token-LP)]      
+    ;=>
+    (token-LP)]
+   
    [(:: #\))
+    ;=>
     (token-RP)]
+   
    [(:: #\[)
-    (token-LS)]      
+    ;=>
+    (token-LS)]
+   
    [(:: #\])
+    ;=>
     (token-RS)]
+   
    [(:: #\{)
-    (token-LK)]      
+    ;=>
+    (token-LK)]
+   
    [(:: #\})
+    ;=>
     (token-RK)]
+
+   ;Se añade begin
+   [(:: #\b #\e #\g #\i #\n)
+    ;=>
+    (token-BEGIN)]
+   
    [(:: #\i #\f)
+    ;=>
     (token-IF)]
+   
    [(:: #\t #\h #\e #\n)
+    ;=>
     (token-THEN)]
+              
    [(:: #\e #\l #\s #\e)
+    ;=>
     (token-ELSE)]
+   
    [(:: #\l #\e #\t)
+    ;=>
     (token-LET)]
+   
    [(:: #\i #\n)
+    ;=>
     (token-IN)]
+   
    [(:: #\e #\n #\d)
+    ;=>
     (token-END)]
+   
    [(:: #\=)
+    ;=>
     (token-ASSIGN)]
-   [(:: #\f #\u #\n #\F)      
-    (token-FUNF)]             
+   
+   [(:: #\f #\u #\n #\F)
+    ;=>
+    (token-FUNF)]
+   
    [(:: #\f #\u #\n)
+    ;=>
     (token-FUN)]
+   
    [(:: #\:)
+    ;=>
     (token-TYPEOF)]
+   
    [(:: #\= #\>)
+    ;=>
     (token-ACA)]
+   
    [(:: #\a #\p #\p)
+    ;=>
     (token-APP)]
+   
    [(eof)
     (token-EOF)]
    [(:: (:or #\- (epsilon)) 
@@ -111,6 +179,13 @@ Lexer y parser
              (char-range #\0 #\9) ; u num
              (:* (:: (char-range #\a #\z) (char-range #\0 #\9))) ;; chars and nums
              (epsilon))) ;; nothing
+    ; =>
+    (token-VAR (string->symbol lexeme))]
+
+    [(:: (:+ (char-range #\a #\z)) ; a char
+        (:or 
+             (:* (:: (:* (char-range #\a #\z)) (:* (char-range #\0 #\9)))))) ;; chars and nums
+             ;;(epsilon))) ;; nothing
     ; =>
     (token-VAR (string->symbol lexeme))]
    
