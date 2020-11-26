@@ -9,6 +9,9 @@ Profesora: Dra. Lourdes del Carmen Gonzalez Huesca
 Ayudante: Juan Alfonso Garduño Solís
 Laboratorio: Fernando Abigail Galicia Mendoza
 
+César Eduardo Jardines Mendoza, 314071549
+Jerónimo Almeida Rodríguez, 418003815
+
 Some helper functions done in the session 11/6/2020.
 |#
 
@@ -148,36 +151,25 @@ Some helper functions done in the session 11/6/2020.
      (let ([name (new-name)])
        `(letfun ([,name Lambda (lambda ([,x ,t]) ,body)]) ,name))]))
 
+
 ;Ejercicio 4
-#|
-(define-pass verify-arity : L8(ir) -> L8()
-  (definitions
-    (define (arit? o) (memq o '(+ - / *)))
-    (define (list? l) (memq l '(car cdr length))))
-  (Expr : Expr (ir) -> Expr()
-    [(primapp ,pr ,[e*]...) (cond
-                            [(and (arit? pr) (equal? (length e*) 2)) ir]
-                            [(and (list? pr) (equal? (length e*) 1)) ir]
-                            [else (error "Arity missmatch")])])) |#
-#|
 (define-pass verify-arity : L8 (ir) -> L8 ()
   (definitions
     (define (arit? o) (memq o '(+ - / *)))
     (define (list? o) (memq o '(car cdr length)))
     )
   (Expr : Expr (ir) -> Expr ()
-        [(primapp ,pr ,[e*] ...)
+        [(primapp ,pr ,e)
          (cond
-           [(and (arit? pr) (equal? (length e*))2) ir]
-           [(and (list? pr) (equal? (length e*))2) ir]
-           [else (error "Arity mismatch")])])) |#
+           [(and (arit? pr) (equal? (length (unparse-L8 e))) 2) ir]
+           [(and (list? pr) (equal? (length (unparse-L8 e))) 1) ir]
+           [else (error "Arity mismatch")])])) 
 
 
-
-;Funcion auxiliar para verify-vars
-(define (rmvl lst x)
+;Funciones auxiliares para el Ejercicio 5
+(define (rmrep lst x)
   (cond
-    [(member x lst) (rmvl (remove x lst) x)]
+    [(member x lst) (rmrep (remove x lst) x)]
     [else lst]))
 
 (define (pass expr)
@@ -186,13 +178,14 @@ Some helper functions done in the session 11/6/2020.
                      [(begin ,e* ...,e) (append (pass e) (foldr append '() (map pass e*)))]
                      [(if ,e0 ,e1 ,e2) (append (append (pass e0) (pass e1)) (pass e2))]
                      [(lambda ([,x* ,t*] ...) ,body) (remv* (pass body) x*)]
-                     [(let ([,x ,t ,e*]) ,body) (rmvl (append (pass body) (pass e*))  `,x)]
-                     [(letrec ([,x ,t ,e*]) ,body) (rmvl (append (pass body) (pass e*) `,x))]
-                     [(letfun ([,x ,t ,e*]) ,body) (rmvl (append (pass body) (pass e*) `,x))]
+                     [(let ([,x ,t ,e*]) ,body) (rmrep (append (pass body) (pass e*))  `,x)]
+                     [(letrec ([,x ,t ,e*]) ,body) (rmrep (append (pass body) (pass e*) `,x))]
+                     [(letfun ([,x ,t ,e*]) ,body) (rmrep (append (pass body) (pass e*) `,x))]
                      [(primapp ,pr ,e* ...) (foldr append '() (map pass e*))]
                      [(list ,e* ,e) (append (verify-vars e) (append-map verify-vars e*))]
                      [else expr]))
 
+;Ejercicio 5
 (define-pass verify-vars : L8 (ir) -> L8 ()
   (Expr : Expr (ir) -> Expr ()
         [,x (let([lst (pass ir)])(if (empty? lst)
@@ -260,4 +253,3 @@ Some helper functions done in the session 11/6/2020.
 #| Some examples for exercise 5 |#
 ;(verify-vars (parser-L8 '(x)))
 ;(verify-vars (parser-L8 '(+ 2 x)))
-(verify-vars (parser-L8 '(let ((x Bool #t)) (x)))) ; no errror
